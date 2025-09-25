@@ -8,9 +8,14 @@ class Fighter:
         self.strength = strength
         self.health = health
         self.hand = None
+        self.inventory = []
 
     def get(self, food):
-        self.hand = food
+        self.inventory.append(food)
+    
+    def load(self, index):
+        self.hand = self.inventory[index]
+        self.inventory.pop(index)
 
     def say_my_name(self):
         return self.name
@@ -77,8 +82,18 @@ gug = Fighter("gug", 0, 5)
 you = Fighter("You", 10, 1000)
 fighterList = [a, b, c, d, gug]
 for i in fighterList:
-    i.get(foodList[random.randint(0, len(foodList) - 1)])
+    for j in range(3):
+        i.get(foodList[random.randint(0, len(foodList) - 1)])
+
 def attack():
+    print("Choose ammunition:")
+    for i in you.inventory:
+        print(i.return_name())
+    whatToThrow = input()
+    for i in you.inventory:
+        if whatToThrow == i.return_name():
+            you.load(you.inventory.index(i))
+            fooj = you.whats_in_my_hand()
     print("Choose target:")
     for i in fighterList:
         print(i.say_my_name())
@@ -92,6 +107,7 @@ def foodfight():
     for i in fighterList:
         target = fighterListTwo[random.randint(0, len(fighterListTwo) - 1)]
         print(i.say_my_name() + " attacked " + target.say_my_name())
+        i.load(random.randint(0, len(i.inventory) - 1))
         i.throw(target)
         print("")
 
@@ -99,12 +115,13 @@ fighterListTwo = [a, b, c, d, gug, you]
 print("It's lunchtime again. What food do you want to pick?")
 for i in foodList:
     i.send_info()
-whatFood = input()
-for i in foodList:
-    if whatFood == i.return_name():
-        you.get(i)
-fooj = you.whats_in_my_hand()
-print("You got " + fooj.return_name())
+for j in range(3):
+    whatFood = input()
+
+    for i in foodList:
+        if whatFood == i.return_name():
+            you.get(i)
+            print("You got " + i.return_name())
 print("\n")
 
 
@@ -113,10 +130,14 @@ attack()
 
 print("Watch out, they're throwing things!")
 foodfight()
-if you.health < 0:
-    print("You are dead")
-    print("RIP")
-else:
+
+for i in range(3):
     attack()
     print("They're doing it again!")
     foodfight()
+    if you.health < 0:
+        print("You are dead")
+        print("RIP")
+        break
+
+print("Everyone ran out of ammunition and the food fight is over.")
